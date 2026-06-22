@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 1 - SecurePayAI</title>
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}" />
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background-color: #fff;
+            padding: 35px 28px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(to right, #2e86de, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            background-color: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #1f67b2;
+        }
+
+        .error-message {
+            font-size: 13px;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+    </style>
+
+    <script>
+        function validatePhoneNumber() {
+            const phone = document.getElementById("phone").value;
+            const phoneError = document.getElementById("phone-error");
+            const regex = /^\+\d{1,4}\s\d{6,}$/; // e.g. +92 3001234567
+            if (!regex.test(phone)) {
+                phoneError.textContent = "❗ Enter a valid phone number (e.g. +92 3001234567).";
+            } else {
+                phoneError.textContent = "";
+            }
+        }
+
+        function validateCnic() {
+            const cnic = document.getElementById("cnic").value;
+            const cnicError = document.getElementById("cnic-error");
+            const regex = /^\d{13}$/;
+            if (!regex.test(cnic)) {
+                cnicError.textContent = "❗ Enter a valid CNIC (13 digits).";
+            } else {
+                cnicError.textContent = "";
+            }
+        }
+
+        function validateDate(dateId) {
+            const date = document.getElementById(dateId).value;
+            const dateError = document.getElementById(dateId + "-error");
+            if (!date) {
+                dateError.textContent = "❗ This field is required.";
+            } else {
+                dateError.textContent = "";
+            }
+        }
+
+        function validateForm() {
+            validatePhoneNumber();
+            validateCnic();
+            validateDate("dob");
+            validateDate("cnic-issue-date");
+            validateDate("cnic-expiry-date");
+            return true;
+        }
+
+        function updatePhonePrefix() {
+            const code = document.getElementById("country-code").value;
+            const phoneInput = document.getElementById("phone");
+            if (!phoneInput.value.startsWith(code)) {
+                phoneInput.value = code + " ";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header-title">Step 1: Personal Details</h1>
+        <form method="POST" action="{% url 'payment:step1' %}" onsubmit="return validateForm()">
+            {% csrf_token %}
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            <!-- Phone Number -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="country-code" class="input-field" style="width: 40%;" onchange="updatePhonePrefix()">
+                        <option value="+92">🇵🇰 +92 (Pakistan)</option>
+                        <option value="+1">🇺🇸 +1 (USA)</option>
+                        <option value="+44">🇬🇧 +44 (UK)</option>
+                        <option value="+91">🇮🇳 +91 (India)</option>
+                        <option value="+61">🇦🇺 +61 (Australia)</option>
+                        <option value="+81">🇯🇵 +81 (Japan)</option>
+                        <option value="+49">🇩🇪 +49 (Germany)</option>
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="+86">🇨🇳 +86 (China)</option>
+                        <option value="+971">🇦🇪 +971 (UAE)</option>
+                        <option value="+880">🇧🇩 +880 (Bangladesh)</option>
+                        <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
+                        <option value="+234">🇳🇬 +234 (Nigeria)</option>
+                        <option value="+20">🇪🇬 +20 (Egypt)</option>
+                        <option value="+55">🇧🇷 +55 (Brazil)</option>
+                        <option value="+7">🇷🇺 +7 (Russia)</option>
+                        <!-- Add more if needed -->
+                    </select>
+                    <input type="text" id="phone" name="phone" class="input-field" style="width: 60%;" placeholder="e.g. +92 3001234567" required oninput="validatePhoneNumber()">
+                </div>
+                <div id="phone-error" class="error-message"></div>
+            </div>
+
+            <!-- CNIC -->
+            <div class="form-group">
+                <label for="cnic">CNIC (13 digits)</label>
+                <input type="text" id="cnic" name="cnic" class="input-field" required oninput="validateCnic()">
+                <div id="cnic-error" class="error-message"></div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" class="input-field" required>
+            </div>
+
+            <!-- City -->
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" class="input-field" required>
+            </div>
+
+            <!-- Postal Code -->
+            <div class="form-group">
+                <label for="postal-code">Postal Code</label>
+                <input type="text" id="postal-code" name="postal_code" class="input-field" required>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" class="date-input" required onblur="validateDate('dob')">
+                <div id="dob-error" class="error-message"></div>
+            </div>
+
+            <!-- CNIC Issuance Date -->
+            <div class="form-group">
+                <label for="cnic-issue-date">CNIC Issuance Date</label>
+                <input type="date" id="cnic-issue-date" name="cnic_issue_date" class="date-input" required onblur="validateDate('cnic-issue-date')">
+                <div id="cnic-issue-date-error" class="error-message"></div>
+            </div>
+
+            <!-- CNIC Expiry Date -->
+            <div class="form-group">
+                <label for="cnic-expiry-date">CNIC Expiry Date</label>
+                <input type="date" id="cnic-expiry-date" name="cnic_expiry_date" class="date-input" required onblur="validateDate('cnic-expiry-date')">
+                <div id="cnic-expiry-date-error" class="error-message"></div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Next</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

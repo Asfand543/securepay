@@ -1,0 +1,374 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup - SecurePayAI</title>
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}" />
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background-color: #fff;
+            padding: 35px 28px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(to right, #2e86de, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            background-color: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #1f67b2;
+        }
+
+        .error-message {
+            font-size: 13px;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .password-checklist {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 5px;
+            background-color: #f9f9f9;
+            border: 1px solid #dde5f1;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .password-checklist li {
+            width: 48%;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            color: #e74c3c;
+        }
+
+        .password-checklist li.valid {
+            color: #2ecc71;
+        }
+
+        .password-checklist li::before {
+            content: "✖";
+            margin-right: 8px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .password-checklist li.valid::before {
+            content: "✔";
+            color: #2ecc71;
+        }
+
+        .password-strength {
+            height: 6px;
+            border-radius: 4px;
+            margin-top: 6px;
+            background-color: #eee;
+            position: relative;
+        }
+
+        .password-strength::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 8px;
+            top: -20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .strength-weak {
+            background-color: #e74c3c;
+        }
+
+        .strength-medium {
+            background-color: orange;
+        }
+
+        .strength-strong {
+            background-color: #2ecc71;
+        }
+
+        .match-status {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .match-status.valid {
+            color: #2ecc71;
+        }
+
+        .match-status.invalid {
+            color: #e74c3c;
+        }
+
+        .g-recaptcha {
+            transform: scale(0.94);
+            transform-origin: 0 0;
+            margin-top: 5px;
+        }
+
+        .signup-link {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 24px;
+        }
+
+        .signup-link a {
+            color: #2e86de;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 28px 20px;
+            }
+
+            .header-title {
+                font-size: 22px;
+                margin-bottom: 25px;
+            }
+
+            .input-field {
+                font-size: 13px;
+                padding: 7px 9px;
+            }
+
+            .submit-btn {
+                font-size: 14px;
+            }
+
+            .signup-link {
+                font-size: 12px;
+            }
+        }
+    </style>
+
+    <script>
+        function validateUsername() {
+            const username = document.getElementById("username").value;
+            const error = document.getElementById("username-error");
+            const isValid = /^[a-zA-Z0-9]+$/.test(username);
+            error.textContent = isValid ? "" : " Only letters and numbers are allowed.";
+        }
+
+        function validateEmail() {
+    const email = document.getElementById("email").value.trim();
+    const error = document.getElementById("email-error");
+    const allowedDomains = ["gmail.com", "outlook.com", "hotmail.com", "yahoo.com"];
+
+    // Extract domain after the @ symbol
+    const parts = email.split("@");
+    const domain = parts.length === 2 ? parts[1].toLowerCase() : "";
+
+    // Basic email pattern check
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (pattern.test(email) && allowedDomains.includes(domain)) {
+        error.textContent = "";
+    } else {
+        error.textContent = "❗ Enter a valid email address (e.g. Gmail, Outlook, Yahoo).";
+        error.style.fontWeight = "bold";
+    }
+}
+
+        function checkPasswordRequirements() {
+            const pw = document.getElementById("password").value;
+            toggleClass("pw-length", pw.length >= 8);
+            toggleClass("pw-uppercase", /[A-Z]/.test(pw));
+            toggleClass("pw-number", /\d/.test(pw));
+            toggleClass("pw-special", /[^A-Za-z0-9]/.test(pw));
+        }
+
+        function toggleClass(id, isValid) {
+            const el = document.getElementById(id);
+            el.classList.toggle("valid", isValid);
+        }
+
+        function updatePasswordStrength() {
+            const strengthBar = document.getElementById("password-strength");
+            const password = document.getElementById("password").value;
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            strengthBar.className = "password-strength";
+            if (strength <= 1) {
+                strengthBar.classList.add("strength-weak");
+                strengthBar.setAttribute("data-label", "Weak");
+            } else if (strength === 2 || strength === 3) {
+                strengthBar.classList.add("strength-medium");
+                strengthBar.setAttribute("data-label", "Medium");
+            } else {
+                strengthBar.classList.add("strength-strong");
+                strengthBar.setAttribute("data-label", "Strong");
+            }
+        }
+
+        function validateConfirmPassword() {
+            const pass = document.getElementById("password").value;
+            const confirm = document.getElementById("confirm_password").value;
+            const status = document.getElementById("password-match-status");
+            if (!confirm) {
+                status.textContent = "";
+                return;
+            }
+            if (pass === confirm) {
+                status.textContent = "✔ Passwords match";
+                status.className = "match-status valid";
+            } else {
+                status.textContent = "✖ Passwords do not match";
+                status.className = "match-status invalid";
+            }
+        }
+
+        function validateTerms() {
+            const termsBox = document.getElementById("terms_conditions");
+            const error = document.getElementById("terms-error");
+            error.textContent = termsBox.checked ? "" : "You must accept the Terms & Conditions.";
+        }
+
+        function validateForm() {
+            validateUsername();
+            validateEmail();
+            validateTerms();
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="header-title">Account Registration</h1>
+        <form method="POST" action="{% url 'payment:signup'%}" onsubmit="return validateForm()">
+            {% csrf_token %}
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            {% if form.errors %}
+            <ul class="errorlist">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="input-field" required oninput="validateUsername()">
+                <div id="username-error" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="input-field" required oninput="validateEmail()">
+                <div id="email-error" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="input-field" required oninput="checkPasswordRequirements(); validateConfirmPassword(); updatePasswordStrength()">
+                <div id="password-strength" class="password-strength"></div>
+                <ul class="password-checklist">
+                    <li id="pw-length">At least 8 characters</li>
+                    <li id="pw-uppercase">1 uppercase letter</li>
+                    <li id="pw-number">1 number</li>
+                    <li id="pw-special">1 special character</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="input-field" required oninput="validateConfirmPassword()">
+                <div id="password-match-status" class="match-status"></div>
+            </div>
+
+            <div class="form-group">
+                <input type="checkbox" id="terms_conditions" name="terms_conditions" required onclick="validateTerms()">
+                <label for="terms_conditions" style="display: inline;">I accept the <a href="{% url 'payment:terms_page' %}" target="_blank">Terms & Conditions</a></label>
+                <div id="terms-error" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Next" class="submit-btn">
+            </div>
+        </form>
+
+        <div class="signup-link">
+            Already have an account? <a href="{% url 'payment:login' %}">Login here</a>
+        </div>
+    </div>
+</body>
+</html>

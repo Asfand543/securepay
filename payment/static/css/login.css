@@ -1,0 +1,103 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff; /* Light Cyan Background */
+}
+
+/* Login Container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e0f7fa; /* Lighter cyan background */
+}
+
+.login-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h2.form-title {
+    font-size: 24px;
+    color: #00796b; /* Dark Cyan for the heading */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    color: #00796b;
+    font-size: 16px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 2px solid #00796b;
+    border-radius: 5px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    background-color: #f1f8e9;
+}
+
+.input-field:focus {
+    border-color: #004d40;
+    outline: none;
+}
+
+/* CAPTCHA Styling */
+.g-recaptcha {
+    margin-bottom: 20px;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #004d40;
+}
+
+/* Sign Up Link */
+.signup-link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #00796b;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}

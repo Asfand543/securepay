@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecurePay AI</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'payment/css/style.css' %}">
+</head>
+<body>
+    <body>
+        <div class="container">
+            <h2>Enter Payment Details</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit Payment</button>
+            </form>
+        </div>
+    </body>
+    
+</body>
+</html>

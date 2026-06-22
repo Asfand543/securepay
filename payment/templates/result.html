@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transaction Prediction Result</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-6 text-center text-cyan-400">Transaction Prediction Result</h2>
+      
+      {% if error %}
+        <div class="text-red-500 text-center mb-4">
+          <p>{{ error }}</p>
+        </div>
+      {% else %}
+        <div class="text-center mb-4">
+          <p class="text-xl font-semibold text-cyan-300">Prediction: 
+            <span class="font-bold {% if prediction == 'Fraudulent' %}text-red-500{% else %}text-green-400{% endif %}">
+              {{ prediction }}
+            </span>
+          </p>
+          <p class="text-lg text-cyan-300">Amount: {{ amount }} <span>{{ currency }}</span></p>
+          <p class="text-lg text-cyan-300">Fraud Probability: {{ probability }}%</p>
+        </div>
+      {% endif %}
+      
+      <div class="text-center mt-6">
+        <a href="{% url 'payment:dashboard' %}" class="text-sm text-cyan-400 hover:underline">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

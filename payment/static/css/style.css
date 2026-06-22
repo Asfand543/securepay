@@ -1,0 +1,70 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #000;
+    overflow-x: hidden;
+}
+
+.hero-container {
+    background: url('../images/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    position: relative;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    text-align: center;
+}
+
+/* Lottie */
+#lottie-container {
+    width: 180px;
+    height: 180px;
+}
+
+/* GIF */
+.payment-gif img {
+    max-width: 180px;
+    height: auto;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 30px;
+    min-width: 180px;
+    padding: 10px 20px;
+}
+
+.btn-social {
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 30px;
+    min-width: 150px;
+}
+
+.google-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.phone-emoji {
+    font-size: 18px;
+}

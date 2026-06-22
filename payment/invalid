@@ -1,0 +1,22 @@
+from django.core.management.base import BaseCommand
+from decimal import Decimal, InvalidOperation
+from payment.models import Transaction
+
+class Command(BaseCommand):
+    help = 'Fix invalid amounts in transactions'
+
+    def handle(self, *args, **kwargs):
+        # Fetch all transactions
+        transactions = Transaction.objects.all()
+
+        for transaction in transactions:
+            try:
+                # Attempt to convert the amount to a valid Decimal
+                transaction.amount = Decimal(transaction.amount)
+                transaction.save()
+            except (InvalidOperation, ValueError):
+                # If invalid, set it to 0.00 and save
+                transaction.amount = Decimal('0.00')
+                transaction.save()
+                
+        self.stdout.write(self.style.SUCCESS('Successfully fixed invalid amounts in transactions.'))

@@ -1,0 +1,252 @@
+<!-- accounts.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Accounts - SecurePay AI</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-RXf+QSDCUQs6Q0zQe5HbTXzK5yS0wN2f9E/9kZQn1gBqvX0dRwPAl3+9zQFqzGLhF6Yd8T5xAgFtTC5gZid7Nw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 26px;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn {
+      background-color: #2e86de;
+      color: #fff;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #1b4f72;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #2e86de;
+      color: white;
+    }
+
+    .status-badge {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .active {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .action-icons i {
+      cursor: pointer;
+      margin-right: 10px;
+      color: #444;
+    }
+
+    .action-icons i:hover {
+      color: #2e86de;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .modal-content h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .modal-content .btn {
+      width: 100%;
+    }
+
+    .modal-close {
+      text-align: right;
+      margin-bottom: -10px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      .card-body {
+        font-size: 14px;
+      }
+      th, td {
+        font-size: 13px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h3><i class="fas fa-university"></i> Manage Your Accounts</h3>
+
+    <div class="card">
+      <div class="card-body">
+        <p>Manage your bank accounts — add, edit, or review account details.</p>
+        <button class="btn" onclick="openModal()">
+          <i class="fas fa-plus-circle"></i> Add New Account
+        </button>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Account Name</th>
+              <th>Account Type</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Business Checking</td>
+              <td>Checking</td>
+              <td><span class="status-badge active">Active</span></td>
+              <td class="action-icons">
+                <i class="fas fa-edit" title="Edit"></i>
+                <i class="fas fa-trash-alt" title="Delete"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>Personal Savings</td>
+              <td>Savings</td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+              <td class="action-icons">
+                <i class="fas fa-edit" title="Edit"></i>
+                <i class="fas fa-trash-alt" title="Delete"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Add Account -->
+  <div id="accountModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal()">&times;</div>
+      <h4>Add New Account</h4>
+      <input type="text" placeholder="Account Name" required />
+      <select>
+        <option value="">Select Account Type</option>
+        <option value="Checking">Checking</option>
+        <option value="Savings">Savings</option>
+        <option value="Business">Business</option>
+      </select>
+      <select>
+        <option value="">Select Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <button class="btn">Add Account</button>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById("accountModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("accountModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("accountModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
+</body>
+</html>

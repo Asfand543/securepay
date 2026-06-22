@@ -1,0 +1,31 @@
+/* Reset margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Background Image Fix */
+body {
+    background: url('../images/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    background-color: #000; /* fallback color */
+    color: #fff;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    padding: 0 15px;
+    background-color: rgba(0, 0, 0, 0.6); /* overlay effect */
+}
+
+/* Buttons spacing and sizing */
+.btn {
+    min-width: 180px;
+}

@@ -1,0 +1,121 @@
+{% extends 'payment/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-5" style="font-weight: bold; font-size: 2.5rem; color: white;">Analytics Dashboard</h2>
+
+    <div class="row">
+        <!-- Total Transactions -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Total Transactions</h4>
+                    <p>{{ total_transactions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Successful Transactions -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Successful Transactions</h4>
+                    <p>{{ successful_transactions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Failed Transactions -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Failed Transactions</h4>
+                    <p>{{ failed_transactions }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Integration -->
+    <div class="mt-5">
+        <canvas id="transactionChart"></canvas>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var successfulData = {{ successful_transactions_data|safe }};
+    var failedData = {{ failed_transactions_data|safe }};
+    var weekLabels = {{ week_labels|safe }};
+    
+    var ctx = document.getElementById('transactionChart').getContext('2d');
+    
+    var gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientBlue.addColorStop(0, '#06b6d4');
+    gradientBlue.addColorStop(1, '#00f0f5');
+
+    var gradientRed = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientRed.addColorStop(0, '#f87171');
+    gradientRed.addColorStop(1, '#ff6262');
+
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: weekLabels,
+            datasets: [{
+                label: 'Successful Transactions',
+                data: successfulData,
+                backgroundColor: gradientBlue,
+                borderColor: '#06b6d4',
+                borderWidth: 1,
+                hoverBackgroundColor: '#05a0b7',
+            }, {
+                label: 'Failed Transactions',
+                data: failedData,
+                backgroundColor: gradientRed,
+                borderColor: '#f87171',
+                borderWidth: 1,
+                hoverBackgroundColor: '#f73b3b',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Weeks',
+                    },
+                    grid: {
+                        color: '#333',
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Transactions Count',
+                    },
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ccc',
+                    },
+                    grid: {
+                        color: '#333',
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ccc',
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

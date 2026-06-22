@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Step 4 - Complete</title>
+  <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #00c6ff, #0072ff), url('https://images.unsplash.com/photo-1542223616-2d8a2d7e6406') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(4px);
+    }
+
+    .container {
+      position: relative;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 50px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-width: 600px;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ffdd57;
+    }
+
+    p {
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #00ffae;
+    }
+
+    .tick-gif {
+      width: 120px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .confetti-gif {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 80px;
+      opacity: 0.95;
+      z-index: 2;
+    }
+
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #00c6ff;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .nav-btn:hover {
+      background-color: #009edb;
+    }
+
+    .login-btn {
+      background-color: #28a745;
+    }
+
+    .login-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" alt="Celebration" class="confetti-gif">
+    <img src="https://media.giphy.com/media/4T7e4DmcrP9du/giphy.gif" alt="Success Tick" class="tick-gif">
+    <h2>Step 4: Complete</h2>
+    <p><span class="highlight">Thank you!</span> Your details have been <span class="highlight">successfully submitted</span>.</p>
+    <p>We will <span class="highlight">process your payment</span> shortly. 💸</p>
+
+    <div class="button-group">
+      <a href="{% url 'payment:login' %}" class="nav-btn login-btn">🔐 Login</a>
+      <a href="{% url 'payment:home' %}" class="nav-btn">🏠 Go to Homepage</a>
+    </div>
+  </div>
+
+</body>
+</html>

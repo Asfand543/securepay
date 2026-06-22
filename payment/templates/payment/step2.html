@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 2 - SecurePayAI</title>
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #00c6ff, #2e86de); /* Gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 650px;
+            background-color: #fff;
+            padding: 35px 28px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-title {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(to right, #2e86de, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .confirmation-info {
+            margin-bottom: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .confirmation-info h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .confirmation-info p {
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .image-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .image-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .image-preview .image-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #00c6ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #00b0e3;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #ff3b30;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #e32e26;
+        }
+
+        .step-container {
+            max-width: 600px;
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-content h2 {
+            font-size: 26px;
+            color: #333;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-back,
+        .btn-next {
+            padding: 12px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-back {
+            background-color: #ff3b30;
+            color: #fff;
+        }
+
+        .btn-next {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+
+        .btn-back:hover {
+            background-color: #e32e26;
+        }
+
+        .btn-next:hover {
+            background-color: #27ae60;
+        }
+
+        .form-group {
+            margin-top: 20px;
+        }
+
+        .file-upload {
+            margin-top: 15px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="signup-container">
+        <div class="signup-form">
+            <h2 class="form-title">Review Your Information</h2>
+            <p class="confirmation-info">Please review the details below and click "Submit" to complete your registration.</p>
+
+            <!-- Review Information Section -->
+            <div class="confirmation-info">
+                <h3>Personal Details</h3>
+                <p><strong>Username:</strong> {{ username }}</p>
+                <p><strong>Email:</strong> {{ email }}</p>
+            </div>
+
+            <div class="confirmation-info">
+                <h3>Uploaded Documents</h3>
+                <p><strong>CNIC Front:</strong></p>
+                <div class="image-preview">
+                    <img src="{{ cnic_front_url }}" alt="CNIC Front Preview" />
+                </div>
+
+                <p><strong>CNIC Back:</strong></p>
+                <div class="image-preview">
+                    <img src="{{ cnic_back_url }}" alt="CNIC Back Preview" />
+                </div>
+
+                <p><strong>Personal Picture:</strong></p>
+                <div class="image-preview">
+                    <img src="{{ personal_picture_url }}" alt="Personal Picture Preview" />
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="file-upload">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="cnic_front">Upload CNIC Front:</label>
+                        <input type="file" name="cnic_front" id="cnic_front" class="file-input" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="cnic_back">Upload CNIC Back:</label>
+                        <input type="file" name="cnic_back" id="cnic_back" class="file-input" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal_picture">Upload Personal Picture:</label>
+                        <input type="file" name="personal_picture" id="personal_picture" class="file-input" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Submit" class="submit-btn">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Back Button to Edit Information -->
+            <div class="form-group">
+                <a href="{% url 'payment:step2' %}">
+                    <button class="back-btn">Back to Edit</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step Navigation -->
+    <div class="step-container">
+        <div class="step-content">
+            <h2>Step 3: Confirmation</h2>
+            <div class="step-navigation">
+                <a href="{% url 'payment:step1' %}" class="btn-back">Back</a>
+                <a href="{% url 'payment:step3' %}" class="btn-next">Next</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
