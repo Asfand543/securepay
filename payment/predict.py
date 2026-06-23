@@ -15,7 +15,14 @@ FEATURE_COLUMNS = [
 # Set model path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, '..', 'fraud_model', 'fraud_model.joblib')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.abspath(
+    os.path.join(BASE_DIR, '..', 'fraud_model', 'fraud_model.joblib')
+)
 
+# 👇 DEBUG HERE (ADD THIS)
+print("MODEL PATH:", MODEL_PATH)
+print("FILE EXISTS:", os.path.exists(MODEL_PATH))
 # Load model
 try:
     model = joblib.load(MODEL_PATH)

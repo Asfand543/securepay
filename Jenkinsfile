@@ -16,15 +16,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t securepay .'
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Stop Old Container') {
             steps {
                 sh '''
-                docker stop securepay_container || true
-                docker rm securepay_container || true
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
                 '''
             }
         }
@@ -33,9 +33,9 @@ pipeline {
             steps {
                 sh '''
                 docker run -d \
-                --name securepay_container \
+                --name $CONTAINER_NAME \
                 -p 8000:8000 \
-                securepay
+                $IMAGE_NAME
                 '''
             }
         }
