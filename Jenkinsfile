@@ -36,7 +36,7 @@ pipeline {
         stage('Load Image into Minikube') {
             steps {
                 sh '''
-                minikube image load ${IMAGE_NAME}
+                docker save securepay:latest | (eval $(minikube docker-env) && docker load)
                 '''
             }
         }
