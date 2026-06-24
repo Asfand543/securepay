@@ -36,7 +36,9 @@ pipeline {
         stage('Load Image into Minikube') {
             steps {
                 sh '''
-                docker save securepay:latest | (eval $(minikube docker-env) && docker load)
+                 docker save securepay:latest -o /tmp/securepay.tar
+            docker cp /tmp/securepay.tar minikube:/tmp/securepay.tar
+            docker exec minikube docker load -i /tmp/securepay.tar
                 '''
             }
         }
