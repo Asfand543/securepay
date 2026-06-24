@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: securepay-app
+  namespace: securepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: securepay-app
+  template:
+    metadata:
+      labels:
+        app: securepay-app
+    spec:
+      containers:
+        - name: securepay-app
+          image: securepay:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEBUG
+              value: "True"
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
+          command: ["/bin/sh", "-c"]
+          args:
+            - python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000
+          volumeMounts:
+            - name: securepay-storage
+              mountPath: /app/db
+            - name: securepay-storage
+              mountPath: /app/media
+      volumes:
+        - name: securepay-storage
+          persistentVolumeClaim:
+            claimName: securepay-pvc

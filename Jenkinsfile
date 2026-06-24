@@ -2,49 +2,83 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "securepay"
-        CONTAINER_NAME = "securepay_container"
+        APP_NAME = "securepay"
+        IMAGE_NAME = "securepay:latest"
+        NAMESPACE = "securepay"
+        K8S_DIR = "k8s"
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Verify Files') {
+            steps {
+                sh '''
+                pwd
+                ls -la
+                ls -la ${K8S_DIR}
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
-            }
-        }
-
-        stage('Stop Old Container') {
-            steps {
                 sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
+                docker build -t ${IMAGE_NAME} -f dockerfile .
                 '''
             }
         }
 
-        stage('Run Container') {
+        stage('Load Image into Minikube') {
             steps {
                 sh '''
-                docker run -d \
-                --name $CONTAINER_NAME \
-                -p 8000:8000 \
-                $IMAGE_NAME
+                minikube image load ${IMAGE_NAME}
                 '''
             }
         }
 
-        stage('Health Check') {
+        stage('Deploy Namespace') {
             steps {
                 sh '''
-                sleep 10
-                curl -f http://localhost:8000 || exit 1
+                kubectl apply -f ${K8S_DIR}/namespace.yaml
+                '''
+            }
+        }
+
+        stage('Deploy PVC') {
+            steps {
+                sh '''
+                kubectl apply -f ${K8S_DIR}/pvc.yaml
+                '''
+            }
+        }
+
+        stage('Deploy App to Kubernetes') {
+            steps {
+                sh '''
+                kubectl apply -f ${K8S_DIR}/deployment.yaml
+                kubectl apply -f ${K8S_DIR}/service.yaml
+                '''
+            }
+        }
+
+        stage('Restart Deployment') {
+            steps {
+                sh '''
+                kubectl rollout restart deployment/${APP_NAME}-app -n ${NAMESPACE}
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                kubectl get all -n ${NAMESPACE}
+                kubectl get pvc -n ${NAMESPACE}
                 '''
             }
         }
@@ -52,10 +86,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ securepay deployed successfully"
+            echo 'SecurePay application deployed successfully to Kubernetes!'
         }
         failure {
-            echo "❌ Deployment failed"
+            echo 'Pipeline failed. Check logs for troubleshooting.'
         }
     }
 }
