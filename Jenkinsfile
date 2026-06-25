@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "securepay"
+        APP_NAME   = "securepay"
         IMAGE_NAME = "securepay:latest"
-        NAMESPACE = "securepay"
-        K8S_DIR = "k8s"
+        NAMESPACE  = "securepay"
+        K8S_DIR    = "k8s"
     }
 
     stages {
@@ -18,9 +18,21 @@ pipeline {
         stage('Verify Files') {
             steps {
                 sh '''
-                pwd
-                ls -la
-                ls -la ${K8S_DIR}
+                    set -e
+                    pwd
+                    ls -la
+                    ls -la ${K8S_DIR}
+                '''
+            }
+        }
+
+        stage('Verify Tools') {
+            steps {
+                sh '''
+                    set -e
+                    docker --version
+                    kubectl version --client
+                    kubectl get ns
                 '''
             }
         }
@@ -28,7 +40,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t ${IMAGE_NAME} -f dockerfile .
+                    set -e
+                    docker build -t ${IMAGE_NAME} -f dockerfile .
+                    docker images | grep securepay
                 '''
             }
         }
@@ -36,9 +50,10 @@ pipeline {
         stage('Load Image into Minikube') {
             steps {
                 sh '''
-                 docker save securepay:latest -o /tmp/securepay.tar
-            docker cp /tmp/securepay.tar minikube:/tmp/securepay.tar
-            docker exec minikube docker load -i /tmp/securepay.tar
+                    set -e
+                    docker save ${IMAGE_NAME} -o /tmp/securepay.tar
+                    docker cp /tmp/securepay.tar minikube:/tmp/securepay.tar
+                    docker exec minikube docker load -i /tmp/securepay.tar
                 '''
             }
         }
@@ -46,7 +61,8 @@ pipeline {
         stage('Deploy Namespace') {
             steps {
                 sh '''
-                kubectl apply -f ${K8S_DIR}/namespace.yaml
+                    set -e
+                    kubectl apply -f ${K8S_DIR}/namespace.yaml
                 '''
             }
         }
@@ -54,7 +70,8 @@ pipeline {
         stage('Deploy PVC') {
             steps {
                 sh '''
-                kubectl apply -f ${K8S_DIR}/pvc.yaml
+                    set -e
+                    kubectl apply -f ${K8S_DIR}/pvc.yaml
                 '''
             }
         }
@@ -62,8 +79,9 @@ pipeline {
         stage('Deploy App to Kubernetes') {
             steps {
                 sh '''
-                kubectl apply -f ${K8S_DIR}/deployment.yaml
-                kubectl apply -f ${K8S_DIR}/service.yaml
+                    set -e
+                    kubectl apply -f ${K8S_DIR}/deployment.yaml
+                    kubectl apply -f ${K8S_DIR}/service.yaml
                 '''
             }
         }
@@ -71,7 +89,9 @@ pipeline {
         stage('Restart Deployment') {
             steps {
                 sh '''
-                kubectl rollout restart deployment/${APP_NAME}-app -n ${NAMESPACE}
+                    set -e
+                    kubectl rollout restart deployment/${APP_NAME}-app -n ${NAMESPACE}
+                    kubectl rollout status deployment/${APP_NAME}-app -n ${NAMESPACE} --timeout=180s
                 '''
             }
         }
@@ -79,8 +99,18 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sh '''
-                kubectl get all -n ${NAMESPACE}
-                kubectl get pvc -n ${NAMESPACE}
+                    set -e
+                    echo "=== Pods ==="
+                    kubectl get pods -n ${NAMESPACE} -o wide
+
+                    echo "=== Services ==="
+                    kubectl get svc -n ${NAMESPACE}
+
+                    echo "=== PVC ==="
+                    kubectl get pvc -n ${NAMESPACE}
+
+                    echo "=== Endpoints ==="
+                    kubectl get endpoints -n ${NAMESPACE}
                 '''
             }
         }
@@ -92,6 +122,9 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed. Check logs for troubleshooting.'
+        }
+        always {
+            sh 'rm -f /tmp/securepay.tar || true'
         }
     }
 }
