@@ -51,9 +51,7 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    docker save ${IMAGE_NAME} -o /tmp/securepay.tar
-                    docker cp /tmp/securepay.tar minikube:/tmp/securepay.tar
-                    docker exec minikube sh -c "ls -lh /tmp/securepay.tar && docker load -i /tmp/securepay.tar"
+                    docker save ${IMAGE_NAME} | docker exec -i minikube docker load
                 '''
             }
         }
