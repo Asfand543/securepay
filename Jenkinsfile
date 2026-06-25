@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -51,7 +52,9 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    minikube image load ${IMAGE_NAME}
+                    docker save ${IMAGE_NAME} -o /tmp/securepay.tar
+                    docker cp /tmp/securepay.tar minikube:/tmp/securepay.tar
+                    docker exec minikube sh -c "ls -lh /tmp/securepay.tar && docker load -i /tmp/securepay.tar"
                 '''
             }
         }
@@ -122,7 +125,15 @@ pipeline {
             echo 'Pipeline failed. Check logs for troubleshooting.'
         }
         always {
-            sh 'rm -f /tmp/securepay.tar || true'
+            script {
+                try {
+                    sh 'rm -f /tmp/securepay.tar || true'
+                } catch (Exception e) {
+                    echo 'Skipping cleanup because workspace/context was not available.'
+                }
+            }
         }
     }
 }
+
+
