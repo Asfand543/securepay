@@ -3,12 +3,14 @@ pipeline {
 
     environment {
         APP_NAME   = "securepay"
-        IMAGE_NAME = "securepay:latest"
+        IMAGE_NAME = "asfand348/securepay"
+        IMAGE_TAG  = "v1"
         NAMESPACE  = "securepay"
         K8S_DIR    = "k8s"
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
                 checkout scm
@@ -18,21 +20,9 @@ pipeline {
         stage('Verify Files') {
             steps {
                 sh '''
-                    set -e
-                    pwd
-                    ls -la
-                    ls -la ${K8S_DIR}
-                '''
-            }
-        }
-
-        stage('Verify Tools') {
-            steps {
-                sh '''
-                    set -e
-                    docker --version
-                    kubectl version --client
-                    kubectl get ns
+                pwd
+                ls -la
+                ls -la ${K8S_DIR}
                 '''
             }
         }
@@ -40,46 +30,44 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                    set -e
-                    docker build -t ${IMAGE_NAME} -f dockerfile .
-                    docker images | grep securepay
+                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f dockerfile .
+                docker images | grep securepay
                 '''
             }
         }
 
-        stage('Load Image into Minikube') {
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Image') {
             steps {
                 sh '''
-                    set -e
-                    docker save ${IMAGE_NAME} | docker exec -i minikube docker load
+                docker push ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
         }
 
-        stage('Deploy Namespace') {
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    set -e
-                    kubectl apply -f ${K8S_DIR}/namespace.yaml
-                '''
-            }
-        }
-
-        stage('Deploy PVC') {
-            steps {
-                sh '''
-                    set -e
-                    kubectl apply -f ${K8S_DIR}/pvc.yaml
-                '''
-            }
-        }
-
-        stage('Deploy App to Kubernetes') {
-            steps {
-                sh '''
-                    set -e
-                    kubectl apply -f ${K8S_DIR}/deployment.yaml
-                    kubectl apply -f ${K8S_DIR}/service.yaml
+                kubectl apply -f ${K8S_DIR}/namespace.yaml
+                kubectl apply -f ${K8S_DIR}/pvc.yaml
+                kubectl apply -f ${K8S_DIR}/deployment.yaml
+                kubectl apply -f ${K8S_DIR}/service.yaml
                 '''
             }
         }
@@ -87,9 +75,8 @@ pipeline {
         stage('Restart Deployment') {
             steps {
                 sh '''
-                    set -e
-                    kubectl rollout restart deployment/${APP_NAME}-app -n ${NAMESPACE}
-                    kubectl rollout status deployment/${APP_NAME}-app -n ${NAMESPACE} --timeout=180s
+                kubectl rollout restart deployment/${APP_NAME}-app -n ${NAMESPACE}
+                kubectl rollout status deployment/${APP_NAME}-app -n ${NAMESPACE}
                 '''
             }
         }
@@ -97,18 +84,8 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sh '''
-                    set -e
-                    echo "=== Pods ==="
-                    kubectl get pods -n ${NAMESPACE} -o wide
-
-                    echo "=== Services ==="
-                    kubectl get svc -n ${NAMESPACE}
-
-                    echo "=== PVC ==="
-                    kubectl get pvc -n ${NAMESPACE}
-
-                    echo "=== Endpoints ==="
-                    kubectl get endpoints -n ${NAMESPACE}
+                kubectl get pods -n ${NAMESPACE}
+                kubectl get svc -n ${NAMESPACE}
                 '''
             }
         }
@@ -116,21 +93,11 @@ pipeline {
 
     post {
         success {
-            echo 'SecurePay application deployed successfully to Kubernetes!'
+            echo "Deployment Successful"
         }
+
         failure {
-            echo 'Pipeline failed. Check logs for troubleshooting.'
-        }
-        always {
-            script {
-                try {
-                    sh 'rm -f /tmp/securepay.tar || true'
-                } catch (Exception e) {
-                    echo 'Skipping cleanup because workspace/context was not available.'
-                }
-            }
+            echo "Deployment Failed"
         }
     }
 }
-
-
