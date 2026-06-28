@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: securepay-app
-          image: securepay:latest
-          imagePullPolicy: Never
+          image: asfand348/securepay:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           env:
